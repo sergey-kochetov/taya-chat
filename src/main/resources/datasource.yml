@@ -1,0 +1,17 @@
+taya:
+  datasource:
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:taya-chat}"
+    username: "${DB_USERNAME:postgres}"
+    password: "${DB_PASSWORD:pass}"
+    type: "POSTGRESQL"
+    driver: "org.postgresql.Driver"
+    dialect: "${DB_DIALECT:ru.russpass.riot.persistence.config.EnhancedPostgreSQLDialect}"
+    polled: "true"
+    maxActiveConnections: "10"
+    maxCheckoutTime: "20000"
+    maxIdleConnections: "5"
+    maxLocalBadConnectionTolerance: "3"
+    pingConnectionsNotUsedFor: "0"
+    pingEnabled: "true"
+    pingQuery: "select 1"
+    timeToWait: "20000"

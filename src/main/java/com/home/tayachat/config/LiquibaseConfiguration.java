@@ -3,18 +3,17 @@ package com.home.tayachat.config;
 import liquibase.Liquibase;
 import liquibase.changelog.ChangeSet;
 import liquibase.database.DatabaseConnection;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,27 +49,25 @@ public class LiquibaseConfiguration {
             super.performUpdate(liquibase);
             List<ChangeSet> updated = liquibase.getDatabaseChangeLog().getChangeSets();
 
-            boolean hasDiff = last == null ||
+            boolean hasDiff = last.isEmpty() ||
                     updated.stream().anyMatch(
-                            changeSet -> last.parallelStream()
-                                    .noneMatch(upd -> changeSet.getId().equals(upd.getId())));
+                            changeSet -> last.stream().noneMatch(upd -> changeSet.getId().equals(upd.getId())));
             liquibaseMigrationProcessed.set(hasDiff);
         }
 
         private List<UpdateData> getLastUpdate(Liquibase liquibase) {
             DatabaseConnection connection = liquibase.getDatabase().getConnection();
-            if (connection instanceof liquibase.database.jvm.JdbcConnection) {
+            if (connection instanceof JdbcConnection) {
                 try {
-                    return getLastUpdate((liquibase.database.jvm.JdbcConnection) connection);
+                    return getLastUpdate((JdbcConnection) connection);
                 } catch (Exception e) {
                     appLog.warn("Failed to receive last executed update", e);
-                    return null;
                 }
             }
-            return null;
+            return Collections.emptyList();
         }
 
-        private List<UpdateData> getLastUpdate(liquibase.database.jvm.JdbcConnection connection) throws Exception {
+        private List<UpdateData> getLastUpdate(JdbcConnection connection) throws Exception {
             ResultSet rs = connection.createStatement().executeQuery(
                     "select id, md5sum, dateexecuted from databasechangelog order by dateexecuted desc"
                             + (LIMIT > 0 ? (" limit " + LIMIT) : ""));
@@ -78,17 +75,17 @@ public class LiquibaseConfiguration {
 
             List<UpdateData> list = new ArrayList<>();
             while (rs.next()) {
-                String id = rs.getString(1);
-                String md5 = rs.getString(2);
-                Date date = rs.getDate(3);
-                list.add(new UpdateData(id, md5, date));
+                list.add(new UpdateData(
+                        rs.getString("id"),
+                        rs.getString("md5sum"),
+                        rs.getDate("dateexecuted")
+                ));
             }
-
             return list;
         }
     }
 
-    @RequiredArgsConstructor
+    @AllArgsConstructor
     @Getter
     public static final class UpdateData {
         private final String id;

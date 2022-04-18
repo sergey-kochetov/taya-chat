@@ -20,17 +20,29 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.liquibase:liquibase-core'
 
-    compileOnly 'org.projectlombok:lombok'
+    implementation group: 'org.springframework.amqp', name: 'spring-rabbit', version: '2.3.10'
+    implementation group: 'org.springframework', name: 'spring-websocket', version: '5.3.9'
+    implementation group: 'org.springframework', name: 'spring-messaging', version: '5.3.9'
+
+    implementation group: 'redis.clients', name: 'jedis', version: '3.6.3'
+    implementation 'org.jetbrains:annotations:23.0.0'
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'

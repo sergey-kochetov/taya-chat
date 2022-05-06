@@ -8,7 +8,7 @@ import java.time.Instant;
 
 @Component
 public class ParticipantConverter {
-    public ParticipantDto makeParticipantDto(Participant participant) {
+    public ParticipantDto toDto(Participant participant) {
         return ParticipantDto.builder()
                 .id(participant.getId())
                 .enterAt(Instant.ofEpochMilli(participant.getEnterAt()))
